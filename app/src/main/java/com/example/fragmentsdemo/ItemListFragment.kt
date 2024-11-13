@@ -38,6 +38,7 @@ class ItemElementAdapter(
 
     fun addItem(item: ItemElement) {
         list.add(item)
+        notifyDataSetChanged()
     }
 }
 
@@ -55,7 +56,12 @@ class ItemListFragment : Fragment(R.layout.item_list_fragment) {
         view.findViewById<ListView>(R.id.itemList).adapter = adapter
 
         view.findViewById<Button>(R.id.addNewItem).setOnClickListener {
-            adapter?.addItem(ItemElement("x",1))
+            //adapter?.addItem(ItemElement("x",1))
+            val nextFrag = AddNewWindowFragment()
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.replace(R.id.mainFragmentView, nextFrag, "findThisFragment")
+                ?.addToBackStack(null)
+                ?.commit()
         }
     }
 }
