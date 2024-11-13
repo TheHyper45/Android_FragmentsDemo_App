@@ -2,6 +2,7 @@ package com.example.fragmentsdemo
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,12 @@ class ItemElementAdapter(
             R.layout.item_list_element,viewGroup,false
         )
 
+        val deleteButton = newConvertView.findViewById<Button>(R.id.itemDeleteButton)
+        deleteButton.setOnClickListener{
+            list.removeAt(index)
+            notifyDataSetChanged()
+        }
+
         val item = getItem(index) as ItemElement
         val itemNameText = newConvertView.findViewById<TextView>(R.id.itemText)
         val itemCountText = newConvertView.findViewById<TextView>(R.id.itemCountText)
@@ -35,16 +42,23 @@ class ItemElementAdapter(
         itemCountText.text = String.format(Locale.ROOT,"%d",item.count)
         return newConvertView
     }
-
-    fun addItem(item: ItemElement) {
-        list.add(item)
-        notifyDataSetChanged()
-    }
 }
 
 class ItemListFragment : Fragment(R.layout.item_list_fragment) {
     override fun onViewCreated(view: View,savedInstanceState: Bundle?) {
         super.onViewCreated(view,savedInstanceState)
+        val items = mutableListOf<ItemElement>()
+
+        arguments?.let { bundle ->
+            // Iterate over all keys in the bundle
+            for (key in bundle.keySet()) {
+                // Retrieve each item from the bundle
+                val number = bundle.getInt(key, 0) // Default value is 0
+                items.add(ItemElement(key.toString(), number)) // Add the pair (name, number) to the list
+            }
+        }
+/*
+        // cant use, because it will be added every time a new item is being added
         val items = mutableListOf(
             ItemElement("WhiteBoard",1),
             ItemElement("Markers",3),
@@ -52,14 +66,22 @@ class ItemListFragment : Fragment(R.layout.item_list_fragment) {
             ItemElement("Chairs",10),
             ItemElement("Desks",10)
         )
+ */
         val adapter = context?.let { ItemElementAdapter(it,items) }
         view.findViewById<ListView>(R.id.itemList).adapter = adapter
+        val addNewButton =  view.findViewById<Button>(R.id.addNewItem)
 
-        view.findViewById<Button>(R.id.addNewItem).setOnClickListener {
-            //adapter?.addItem(ItemElement("x",1))
-            val nextFrag = AddNewWindowFragment()
+        addNewButton.setOnClickListener {
+           addNewButton.isEnabled = false
+            val addNewWindowFragment = AddNewWindowFragment()
+            val bundle = Bundle()
+            items.forEach { item ->
+                bundle.putInt(item.name, item.count)
+            }
+            addNewWindowFragment.arguments = bundle
+
             activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.mainFragmentView, nextFrag, "findThisFragment")
+                ?.add(R.id.mainFragmentView, addNewWindowFragment, "findThisFragment")
                 ?.addToBackStack(null)
                 ?.commit()
         }
