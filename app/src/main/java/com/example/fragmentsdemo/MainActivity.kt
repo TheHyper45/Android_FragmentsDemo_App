@@ -2,14 +2,16 @@ package com.example.fragmentsdemo
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
+    private val dataFormFragment = DataFormFragment()
+    val itemListFragment = ItemListFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,10 +23,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        supportFragmentManager.commit {
-            replace<ItemListFragment>(R.id.mainFragmentView)
-            setReorderingAllowed(true)
-            addToBackStack("Item_List")
+        supportFragmentManager.beginTransaction().add(R.id.mainFragmentView,dataFormFragment).commit()
+        findViewById<Button>(R.id.switchToDataFormFragmentButton).setOnClickListener {
+            supportFragmentManager.beginTransaction().replace(R.id.mainFragmentView,dataFormFragment).commit()
+        }
+        findViewById<Button>(R.id.switchToItemListFragmentButton).setOnClickListener {
+            supportFragmentManager.beginTransaction().replace(R.id.mainFragmentView,itemListFragment).commit()
         }
     }
 
@@ -32,14 +36,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         menuInflater.inflate(R.menu.toolbar_menu,menu)
         return true
     }
-
-    /*override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
-        R.id.toolbarAddNew -> {
-            Log.d("DEBUG","Click")
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
-    }*/
 }

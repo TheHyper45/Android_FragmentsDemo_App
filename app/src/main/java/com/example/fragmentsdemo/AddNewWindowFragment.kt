@@ -1,73 +1,45 @@
 package com.example.fragmentsdemo
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 
-
-class AddNewWindowFragment : Fragment() {
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_add_new_window, container, false)
-
-        val itemList = mutableListOf<Pair<String, Int>>()
-
-        arguments?.let { bundle ->
-            // Iterate over all keys in the bundle
-            for (key in bundle.keySet()) {
-                // Retrieve each item from the bundle
-                val number = bundle.getInt(key, 0) // Default value is 0
-                itemList.add(Pair(key, number)) // Add the pair (name, number) to the list
-            }
-        }
+class AddNewWindowFragment : Fragment(R.layout.fragment_add_new_window) {
+    override fun onViewCreated(view: View,savedInstanceState: Bundle?) {
+        super.onViewCreated(view,savedInstanceState)
 
         val itemNameEditText: EditText = view.findViewById(R.id.itemName)
         val amountEditText: EditText = view.findViewById(R.id.itemAmount)
-        val addButton: Button = view.findViewById(R.id.addDataButton)
 
-        addButton.setOnClickListener {
-            onAddDataButtonPressed(itemNameEditText, amountEditText, itemList)
+        view.findViewById<Button>(R.id.cancelAddDataButton).setOnClickListener {
+            returnToItemList()
         }
-
-        return view
+        view.findViewById<Button>(R.id.addDataButton).setOnClickListener {
+            if(itemNameEditText.text.isNotEmpty() && amountEditText.text.isNotEmpty()) {
+                returnToItemList()
+                val itemList = (activity as MainActivity).itemListFragment
+                itemList.requireView().findViewById<Button>(R.id.addNewItem).isEnabled = true
+                itemList.adapter.addItem(ItemListFragment.ItemElement(
+                    itemNameEditText.text.toString(),
+                    Integer.parseInt(amountEditText.text.toString())
+                ))
+                itemNameEditText.text.clear()
+                amountEditText.text.clear()
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+        }
     }
 
-    private fun onAddDataButtonPressed(
-        itemNameEditText: EditText,
-        amountEditText: EditText,
-        itemList: MutableList<Pair<String, Int>>
-    ) {
-        // Get the text from the EditText fields
-        val itemName = itemNameEditText.text.toString()
-        val amount = amountEditText.text.toString()
-
-        // Check if the fields are empty
-        if (itemName.isNotEmpty() && amount.isNotEmpty()) {
-            val amountInt = Integer.parseInt(amount)
-            Log.d("test", "not empty")
-            val itemListFragment = ItemListFragment()
-
-            val bundle = Bundle()
-            itemList.add(Pair(itemName, amountInt))
-            itemList.forEach { item ->
-                bundle.putInt(item.first, item.second)
-            }
-
-            itemListFragment.arguments = bundle
-
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.mainFragmentView, itemListFragment, "findThisFragment")
-                ?.addToBackStack(null)
-                ?.commit()
-        }
+    private fun returnToItemList() {
+        val mainActivity = activity as MainActivity
+        mainActivity.findViewById<Button>(R.id.switchToItemListFragmentButton).isEnabled = true
+        mainActivity.findViewById<Button>(R.id.switchToDataFormFragmentButton).isEnabled = true
+        val itemList = mainActivity.itemListFragment
+        itemList.requireView().findViewById<Button>(R.id.addNewItem).isEnabled = true
+        requireView().findViewById<EditText>(R.id.itemName).text.clear()
+        requireView().findViewById<EditText>(R.id.itemAmount).text.clear()
+        requireActivity().supportFragmentManager.popBackStack()
     }
 }

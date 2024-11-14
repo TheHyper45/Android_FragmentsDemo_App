@@ -8,14 +8,12 @@
     android:background="#333"
     android:weightSum="1"
     tools:ignore="HardcodedText">
-
     <LinearLayout
         android:layout_marginStart="10dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.7"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/itemText"
             android:layout_width="wrap_content"
@@ -23,7 +21,6 @@
             android:textSize="24sp"
             android:textColor="@color/white"
             android:text="ItemName"/>
-
         <TextView
             android:id="@+id/itemCountText"
             android:layout_width="wrap_content"
@@ -31,9 +28,7 @@
             android:textSize="20sp"
             android:textColor="@color/white"
             android:text="ItemCount"/>
-
     </LinearLayout>
-
     <Button
         android:id="@+id/itemDeleteButton"
         android:layout_width="0dp"
@@ -42,5 +37,4 @@
         android:textSize="24sp"
         android:textColor="@color/white"
         android:text="Delete"/>
-
 </LinearLayout>
