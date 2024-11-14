@@ -18,13 +18,13 @@ class AddNewWindowFragment : Fragment(R.layout.fragment_add_new_window) {
         }
         view.findViewById<Button>(R.id.addDataButton).setOnClickListener {
             if(itemNameEditText.text.isNotEmpty() && amountEditText.text.isNotEmpty()) {
-                returnToItemList()
                 val itemList = (activity as MainActivity).itemListFragment
                 itemList.requireView().findViewById<Button>(R.id.addNewItem).isEnabled = true
                 itemList.adapter.addItem(ItemListFragment.ItemElement(
                     itemNameEditText.text.toString(),
                     Integer.parseInt(amountEditText.text.toString())
                 ))
+                returnToItemList()
                 itemNameEditText.text.clear()
                 amountEditText.text.clear()
                 requireActivity().supportFragmentManager.popBackStack()
